@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Multiplication Duel</title>
+
+<style>
+body{
+background:black;
+color:white;
+text-align:center;
+font-family:Arial;
+}
+
+input,button{
+padding:10px;
+margin:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>MULTIPLICATION DUEL</h1>
+
+<div id="q"></div>
+
+<input id="a" type="number">
+<button onclick="check()">OK</button>
+
+<p id="score"></p>
+
+<script>
+
+let p1=0,p2=0;
+let turn=1;
+
+let x,y;
+
+function newQ(){
+x=Math.floor(Math.random()*10);
+y=Math.floor(Math.random()*10);
+
+document.getElementById("q").innerText=
+"Joueur "+turn+" : "+x+" x "+y;
+}
+
+function check(){
+
+let ans=Number(document.getElementById("a").value);
+
+if(ans===x*y){
+if(turn===1) p1++;
+else p2++;
+}
+
+turn = (turn===1)?2:1;
+
+document.getElementById("a").value="";
+
+document.getElementById("score").innerText=
+"P1: "+p1+" | P2: "+p2;
+
+newQ();
+}
+
+newQ();
+
+</script>
+
+</body>
+</html>

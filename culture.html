@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Quiz</title>
+
+<style>
+body{
+background:black;
+color:white;
+text-align:center;
+font-family:Arial;
+}
+
+button{
+margin:10px;
+padding:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>QUIZ CULTURE G</h1>
+<div id="q"></div>
+
+<button onclick="check(0)">A</button>
+<button onclick="check(1)">B</button>
+<button onclick="check(2)">C</button>
+
+<p id="score"></p>
+
+<script>
+
+let score=0;
+
+let questions=[
+{q:"Capitale de la France ?",a:["Paris","Lyon","Marseille"],r:0},
+{q:"5 x 5 ?",a:["10","20","25"],r:2},
+{q:"Couleur du ciel ?",a:["Bleu","Vert","Rouge"],r:0},
+{q:"Planète rouge ?",a:["Mars","Vénus","Terre"],r:0},
+{q:"Combien de jours dans une semaine ?",a:["5","7","10"],r:1}
+];
+
+let current;
+
+function newQ(){
+
+current = questions[Math.floor(Math.random()*questions.length)];
+
+document.getElementById("q").innerText=current.q;
+
+document.querySelectorAll("button").forEach((b,i)=>{
+b.innerText=current.a[i];
+});
+
+}
+
+function check(i){
+if(i===current.r) score++;
+
+document.getElementById("score").innerText="Score: "+score;
+
+newQ();
+}
+
+newQ();
+
+</script>
+
+</body>
+</html>
+✖️ 3. CALCUL MULTIPLICATION (2 JOUEURS PROPRE)
+
+👉 multiplication.html
+
+✔ tour par tour
+✔ score
+✔ questions propres
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Multiplication Duel</title>
+
+<style>
+body{
+background:black;
+color:white;
+text-align:center;
+font-family:Arial;
+}
+
+input,button{
+padding:10px;
+margin:10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>MULTIPLICATION DUEL</h1>
+
+<div id="q"></div>
+
+<input id="a" type="number">
+<button onclick="check()">OK</button>
+
+<p id="score"></p>
+
+<script>
+
+let p1=0,p2=0;
+let turn=1;
+
+let x,y;
+
+function newQ(){
+x=Math.floor(Math.random()*10);
+y=Math.floor(Math.random()*10);
+
+document.getElementById("q").innerText=
+"Joueur "+turn+" : "+x+" x "+y;
+}
+
+function check(){
+
+let ans=Number(document.getElementById("a").value);
+
+if(ans===x*y){
+if(turn===1) p1++;
+else p2++;
+}
+
+turn = (turn===1)?2:1;
+
+document.getElementById("a").value="";
+
+document.getElementById("score").innerText=
+"P1: "+p1+" | P2: "+p2;
+
+newQ();
+}
+
+newQ();
+
+</script>
+
+</body>
+</html>
+🎮 FIN
+
+✔ tes 3 jeux sont maintenant fonctionnels
+✔ simples
+✔ propres
+✔ compatibles GitHub Pages
+✔ sans bugs compliqués
+
+Si tu veux ensuite je peux te faire :
+👉 un menu Game Center ultra stylé pour tous tes jeux
+👉 ou une page d’accueil avec animations “Game Center”
+👉 ou version mobile optimisée
+
+Dis 👍
