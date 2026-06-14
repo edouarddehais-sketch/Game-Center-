@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Jump Game</title>
+
+<style>
+body{
+margin:0;
+background:black;
+color:white;
+font-family:Arial;
+overflow:hidden;
+}
+
+h1{
+text-align:center;
+margin:10px;
+text-shadow:0 0 10px white;
+}
+
+#game{
+position:relative;
+width:100vw;
+height:80vh;
+background:#111;
+overflow:hidden;
+}
+
+.player{
+width:40px;
+height:40px;
+background:red;
+position:absolute;
+bottom:0;
+left:50px;
+border-radius:6px;
+}
+
+.platform{
+position:absolute;
+background:white;
+height:12px;
+border-radius:5px;
+}
+
+.menu{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:flex;
+flex-wrap:wrap;
+align-items:center;
+justify-content:center;
+}
+
+.level{
+width:80px;
+height:80px;
+margin:10px;
+background:white;
+color:black;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+cursor:pointer;
+border-radius:10px;
+}
+
+.level.locked{
+background:#333;
+color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<h1>JUMP GAME</h1>
+
+<div id="game">
+<div class="player" id="player"></div>
+</div>
+
+<div class="menu" id="menu"></div>
+
+<script>
+
+/* ================= DATA ================= */
+let unlocked = JSON.parse(localStorage.getItem("jumpLevels")) || 1;
+
+let level = 1;
+
+let x = 50;
+let y = 0;
+let vy = 0;
+
+let gravity = 0.7;
+let jumpPower = -16;
+
+let left = false;
+let right = false;
+
+let running = false;
+
+let platforms = [];
+let finishX = 0;
+
+const player = document.getElementById("player");
+const game = document.getElementById("game");
+const menu = document.getElementById("menu");
+
+/* ================= INPUT ================= */
+document.addEventListener("keydown",(e)=>{
+
+if(e.key==="ArrowLeft") left=true;
+if(e.key==="ArrowRight") right=true;
+
+if(e.key===" " && canJump()){
+vy = jumpPower;
+}
+
+});
+
+document.addEventListener("keyup",(e)=>{
+if(e.key==="ArrowLeft") left=false;
+if(e.key==="ArrowRight") right=false;
+});
+
+/* ================= LEVELS FIXES ================= */
+const LEVELS={
+1:[{x:100,y:80,w:220},{x:350,y:120},{x:600,y:160}],
+2:[{x:100,y:80,w:200},{x:350,y:120},{x:600,y:160}],
+3:[{x:80,y:80,w:180},{x:300,y:120},{x:500,y:160},{x:700,y:200}],
+4:[{x:100,y:80,w:180},{x:320,y:120},{x:540,y:160},{x:760,y:200}],
+5:[{x:100,y:80,w:160},{x:280,y:120},{x:460,y:160},{x:640,y:200}],
+6:[{x:100,y:80,w:150},{x:260,y:120},{x:420,y:160},{x:580,y:200}],
+7:[{x:120,y:80,w:140},{x:280,y:120},{x:440,y:160},{x:600,y:200}],
+8:[{x:120,y:80,w:130},{x:280,y:120},{x:440,y:160},{x:600,y:200}],
+9:[{x:120,y:80,w:120},{x:280,y:120},{x:440,y:160},{x:600,y:200}],
+10:[{x:120,y:80,w:100},{x:260,y:120},{x:400,y:160},{x:540,y:200},{x:700,y:240}]
+};
+
+/* ================= MENU ================= */
+function createMenu(){
+menu.innerHTML="";
+
+for(let i=1;i<=10;i++){
+let d=document.createElement("div");
+d.className="level";
+
+if(i>unlocked) d.classList.add("locked");
+
+d.innerText=i;
+
+d.onclick=()=>{
+if(i<=unlocked) start(i);
+};
+
+menu.appendChild(d);
+}
+}
+
+/* ================= START ================= */
+function start(lvl){
+
+level=lvl;
+menu.style.display="none";
+
+reset();
+load(lvl);
+
+running=true;
+loop();
+}
+
+/* ================= RESET ================= */
+function reset(){
+
+x=50;
+y=0;
+vy=0;
+
+platforms.forEach(p=>p.el.remove());
+platforms=[];
+finishX=0;
+}
+
+/* ================= LOAD ================= */
+function load(lvl){
+
+LEVELS[lvl].forEach(p=>{
+
+if(p.x > finishX) finishX = p.x;
+
+let el=document.createElement("div");
+el.className="platform";
+
+el.style.left=p.x+"px";
+el.style.bottom=p.y+"px";
+el.style.width=p.w+"px";
+
+game.appendChild(el);
+
+platforms.push({
+x:p.x,
+y:p.y,
+w:p.w,
+el:el
+});
+
+});
+
+finishX += 150;
+}
+
+/* ================= JUMP CHECK ================= */
+function canJump(){
+
+if(y===0) return true;
+
+for(let p of platforms){
+if(
+x+40 > p.x &&
+x < p.x + p.w &&
+Math.abs(y - p.y) < 5
+){
+return true;
+}
+}
+return false;
+}
+
+/* ================= LOOP ================= */
+function loop(){
+
+if(!running) return;
+
+if(left) x-=6;
+if(right) x+=6;
+
+vy+=gravity;
+
+let oldY=y;
+y-=vy;
+
+if(y<0){
+y=0;
+vy=0;
+}
+
+/* collision */
+for(let p of platforms){
+if(
+x+40 > p.x &&
+x < p.x + p.w &&
+oldY >= p.y &&
+y <= p.y &&
+vy>=0
+){
+y=p.y;
+vy=0;
+}
+}
+
+/* WIN */
+if(x > finishX){
+win();
+}
+
+/* render */
+player.style.left=x+"px";
+player.style.bottom=y+"px";
+
+requestAnimationFrame(loop);
+}
+
+/* ================= WIN ================= */
+function win(){
+
+running=false;
+
+if(level===unlocked && unlocked<10){
+unlocked++;
+localStorage.setItem("jumpLevels",JSON.stringify(unlocked));
+}
+
+menu.style.display="flex";
+createMenu();
+}
+
+/* init */
+createMenu();
+
+</script>
+
+</body>
+</html>
