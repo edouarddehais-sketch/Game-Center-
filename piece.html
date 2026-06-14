@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Coin Game</title>
+
+<style>
+body{
+margin:0;
+background:black;
+color:white;
+overflow:hidden;
+font-family:Arial;
+}
+
+.player{
+width:40px;
+height:40px;
+background:red;
+position:absolute;
+bottom:50px;
+left:50px;
+border-radius:6px;
+}
+
+.coin{
+width:25px;
+height:25px;
+background:gold;
+border-radius:50%;
+position:absolute;
+box-shadow:0 0 10px gold;
+}
+
+#score{
+position:fixed;
+top:10px;
+left:10px;
+font-size:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="score">Score: 0</div>
+<div class="player" id="p"></div>
+
+<script>
+
+let p=document.getElementById("p");
+let x=50;
+let score=0;
+
+document.addEventListener("keydown",(e)=>{
+if(e.key==="ArrowRight") x+=15;
+if(e.key==="ArrowLeft") x-=15;
+
+p.style.left=x+"px";
+});
+
+function spawnCoin(){
+
+let c=document.createElement("div");
+c.className="coin";
+
+let cx=Math.random()*window.innerWidth;
+let cy=Math.random()*window.innerHeight*0.7;
+
+c.style.left=cx+"px";
+c.style.top=cy+"px";
+
+document.body.appendChild(c);
+
+setInterval(()=>{
+
+let px=p.offsetLeft;
+let py=p.offsetTop;
+
+if(Math.abs(px-cx)<30 && Math.abs(py-cy)<30){
+score++;
+document.getElementById("score").innerText="Score: "+score;
+c.remove();
+}
+
+},50);
+
+}
+
+setInterval(spawnCoin,1200);
+
+</script>
+
+</body>
+</html>
